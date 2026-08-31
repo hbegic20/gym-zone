@@ -90,15 +90,15 @@ them, so there's a visible learning trail.
 - [ ] RLS policies for all Phase-1 tables
 - [ ] Plan-generator logic (generatePlan.ts)
 
-### Setup — not started yet
-The repo currently contains only this file (git initialised, no commits).
-- [ ] `create-next-app` scaffold (TypeScript + Tailwind + App Router)
+### Setup
 - [ ] Initial `schema.sql`
-- [ ] First commit
 
 ### Done
-_Nothing yet. Move items here as they land — don't delete them, the trail is
-the point._
+- [x] `create-next-app` scaffold — Next 16.3.3, React 19.2.8, Tailwind v4,
+      no `src/`, alias `@/*`
+- [x] Project structure (`components/`, `lib/*`, `supabase/migrations/`) —
+      `app/api/` deliberately omitted until a real HTTP endpoint needs it
+- [x] First commit
 
 ## Git & PR workflow
 - **I run every git command that changes state. This is default-deny, not a
