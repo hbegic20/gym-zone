@@ -81,9 +81,7 @@ area since I'm learning both sides. Move items to "Done" instead of deleting
 them, so there's a visible learning trail.
 
 ### Frontend
-- [ ] Today's-workout screen (checklist + notes) — design exercise in progress
-- [ ] Exercise library page (filter by muscle group/equipment)
-- [ ] Auth screens (login/signup)
+- [ ] Auth screens (login/signup) — blocked on Supabase Auth existing
 
 ### Backend
 - [ ] `daily_checkins` Server Action (checkIn.ts)
@@ -91,7 +89,9 @@ them, so there's a visible learning trail.
 - [ ] Plan-generator logic (generatePlan.ts)
 
 ### Setup
-- [ ] Initial `schema.sql`
+- [ ] Create Supabase project + link it (`supabase link`)
+- [ ] Apply `schema.sql`, then seed `exercises` from the mock data
+- [ ] `lib/supabase/client.ts` + `server.ts`
 
 ### Done
 - [x] `create-next-app` scaffold — Next 16.3.3, React 19.2.8, Tailwind v4,
@@ -99,6 +99,14 @@ them, so there's a visible learning trail.
 - [x] Project structure (`components/`, `lib/*`, `supabase/migrations/`) —
       `app/api/` deliberately omitted until a real HTTP endpoint needs it
 - [x] First commit
+- [x] Today's-workout screen — Server Component page + client checklist,
+      three plan states (workout / rest / no-plan) as a discriminated union,
+      mock data behind `getTodaysPlan()`
+- [x] Exercise library page — filters held in the URL (`?muscle=&equipment=`),
+      not React state: shareable, refresh-proof, and filtering stays
+      server-side so Phase 2 swaps it for a SQL WHERE clause
+- [x] `schema.sql` v1 — 7 tables, enums mirroring the TS unions, RLS enabled
+      on every table with policies (deny-by-default)
 
 ## Git & PR workflow
 - **I run every git command that changes state. This is default-deny, not a
@@ -141,11 +149,14 @@ them, so there's a visible learning trail.
   YAML file, not a big lift.
 
 ## Core data model
-⚠️ `schema.sql` does not exist yet — what follows is the *plan*, not the
-current state. Once the file exists in the repo root, replace this warning
-with a pointer to it. Planned tables: `profiles`, `exercises`,
-`workout_plans`, `plan_exercises`, `daily_checkins` (the checkbox/notes
-feature), `workout_logs`.
+See `schema.sql` in the repo root (v1 — not yet applied to a Supabase
+project). Tables: `profiles`, `exercises`, `workout_plans`, `plan_days`,
+`plan_exercises`, `daily_checkins` (the checkbox/notes feature),
+`workout_logs`.
+
+`plan_days` was added beyond the original list: a rest day has to be a real
+row (`is_rest_day = true`), otherwise it is indistinguishable from "this plan
+doesn't cover today" — the exact two states the Today screen keeps apart.
 
 ## ⚠️ HOW TO WORK WITH ME — READ THIS FIRST
 
