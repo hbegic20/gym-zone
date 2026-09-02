@@ -117,15 +117,24 @@ them, so there's a visible learning trail.
   - *Why it matters here:* part of what I'm learning is reviewing my own diffs
     before they go in. If you stage for me, I end up reviewing your selection
     instead of my own work.
-- Branch naming: `feature/<short-name>`, `fix/<short-name>`.
+- **Trunk-based: I work directly on `main`. No feature branches, no PRs by
+  default.** Decided deliberately (2026-08-31) because I'm solo — the
+  branch/PR ceremony was costing more than it returned. Don't suggest
+  branching for routine work; just tell me when changes are ready to commit.
+  - Tradeoff I accepted: `main` can hold work-in-progress, so it isn't
+    guaranteed deployable at every commit. Fine while nothing depends on it —
+    revisit if this ever gets deployed for real users or a second person joins.
 - Commit messages: Conventional Commits style (`feat:`, `fix:`, `chore:`,
-  `refactor:`) — good practice to learn now, and it's what most real teams use.
-- Every feature branch gets a PR into `main`, even solo — this is deliberate
-  practice for a normal team workflow, not overhead.
-- **PR review**: request a review from GitHub Copilot's built-in code review
-  on every PR (free with a Copilot subscription, no extra setup — just
-  request it from the PR's Reviewers menu). Treat its comments like a real
-  reviewer's — respond to or fix each one, don't just dismiss them.
+  `refactor:`) — still worth the habit, and it's what most real teams use.
+  This carries more weight now: with no PR titles, the commit log is the only
+  record of what happened and why.
+- **Code review**: I lost the automatic Copilot-on-every-PR loop by dropping
+  PRs, so review has to be asked for on purpose.
+  - For anything non-trivial, run `/code-review` before committing, or ask me
+    to — that's the replacement, not an extra.
+  - If a change is big or risky enough that I want a real second opinion, I
+    can still branch and open a PR for that one change. The workflow is
+    available, just not the default.
 - Optionally, `@claude review` can be set up via the Claude Code GitHub
   Action for a second automated review with different judgment — ask me to
   help wire this up via `.github/workflows/` when you want it; it's a short
