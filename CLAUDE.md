@@ -39,10 +39,38 @@ gym-zone/
   └── CLAUDE.md
 ```
 
-**Rule: keep `lib/types` and `lib/supabase` framework-agnostic** (no Next.js
-imports) — this is what makes a future move to a monorepo (when mobile
-starts) a mechanical refactor instead of a redesign. Everything under `app/`
-and `components/` is allowed to be Next.js-specific.
+**Rule: keep `lib/types` and `lib/supabase/queries` portable.** This is what
+makes a future move to a monorepo (when mobile starts) a mechanical refactor
+instead of a redesign. Everything under `app/` and `components/` is allowed
+to be Next.js-specific.
+
+What "portable" actually requires — **queries take a Supabase client as an
+argument**, they never import one:
+
+```ts
+// ✅ portable — the caller decides which client it is
+export async function getExercises(supabase: SupabaseClient, filters: ExerciseFilters)
+
+// ❌ not portable — pulls in next/headers transitively, even though this
+//    file contains no Next.js import of its own
+import { createClient } from '@/lib/supabase/server'
+```
+
+"No Next.js imports in the file" is *not* a sufficient test: importing
+`server.ts` couples a query to Next.js through the dependency chain. Passing
+the client in is what actually makes React Native able to reuse the layer —
+and it makes queries testable without a database, since a stub can be passed.
+
+**Exempt by name: `lib/supabase/client.ts` and `lib/supabase/server.ts`.**
+These exist to answer *"where is this code running, and how does it carry a
+session"* — platform-specific by definition. `server.ts` must import
+`cookies` from `next/headers`; there is no way around it, and React Native
+would not reuse these files anyway (AsyncStorage, not cookies). This matches
+how Supabase's own Next.js guide lays it out, and how real monorepos split:
+client construction per app, queries and types shared.
+
+This rule only pays for itself if mobile (Phase 5) is still real. If it
+becomes "maybe someday", delete the rule rather than keep paying for it.
 
 ## Backend architecture decisions (already made — don't relitigate these casually)
 
@@ -149,10 +177,13 @@ them, so there's a visible learning trail.
   YAML file, not a big lift.
 
 ## Core data model
-See `schema.sql` in the repo root (v1 — not yet applied to a Supabase
-project). Tables: `profiles`, `exercises`, `workout_plans`, `plan_days`,
+Source of truth is `supabase/migrations/` — there is no root `schema.sql`
+any more, deliberately, so there is only one place the schema is defined.
+v1 (`20260902134619_initial_schema.sql`) is applied to the linked project.
+
+Tables: `profiles`, `exercises`, `workout_plans`, `plan_days`,
 `plan_exercises`, `daily_checkins` (the checkbox/notes feature),
-`workout_logs`.
+`workout_logs`. All seven have RLS enabled.
 
 `plan_days` was added beyond the original list: a rest day has to be a real
 row (`is_rest_day = true`), otherwise it is indistinguishable from "this plan
