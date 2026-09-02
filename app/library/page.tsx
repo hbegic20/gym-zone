@@ -7,6 +7,7 @@ import {
   type MuscleGroup,
 } from '@/lib/types/exercise'
 import { getExercises } from '@/lib/supabase/queries/getExercises'
+import { createClient } from '@/lib/supabase/server'
 import ExerciseCard from '@/components/ExerciseCard'
 import ExerciseFilterControls from '@/components/ExerciseFilters'
 
@@ -27,7 +28,8 @@ export default async function LibraryPage({ searchParams }: PageProps<'/library'
     equipment: parseFilter<Equipment>(params.equipment, EQUIPMENT),
   }
 
-  const exercises = await getExercises(filters)
+  const supabase = await createClient()
+  const exercises = await getExercises(supabase, filters)
   const hasActiveFilter = filters.muscleGroup !== null || filters.equipment !== null
 
   return (
